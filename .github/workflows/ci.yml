@@ -15,18 +15,19 @@ jobs:
 
       - name: Lint with PSScriptAnalyzer
         uses: Amadevus/pwsh-script@v1
-        run: |
-          Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck -MinimumVersion '1.19'
-          $issues = Invoke-ScriptAnalyzer -Path .
-          foreach ($msg in ($issues | Where-Object Severity -EQ 'Error')) {
-            Write-ActionError "$($msg.RuleName): $($msg.Message)" -File $msg.ScriptPath -Line $msg.Line -Column $msg.Column
-          }
-          foreach ($msg in ($issues | Where-Object Severity -EQ 'Warning')) {
-            Write-ActionWarning "$($msg.RuleName): $($msg.Message)" -File $msg.ScriptPath -Line $msg.Line -Column $msg.Column
-          }
-          foreach ($msg in ($issues | Where-Object Severity -EQ 'Information')) {
-            Write-ActionInfo "$($msg.ScriptPath):$($msg.Line):$($msg.Column):$($msg.RuleName): $($msg.Message)"
-          }
+        with:
+          script: |
+            Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck -MinimumVersion '1.19'
+            $issues = Invoke-ScriptAnalyzer -Path .
+            foreach ($msg in ($issues | Where-Object Severity -EQ 'Error')) {
+              Write-ActionError "$($msg.RuleName): $($msg.Message)" -File $msg.ScriptPath -Line $msg.Line -Column $msg.Column
+            }
+            foreach ($msg in ($issues | Where-Object Severity -EQ 'Warning')) {
+              Write-ActionWarning "$($msg.RuleName): $($msg.Message)" -File $msg.ScriptPath -Line $msg.Line -Column $msg.Column
+            }
+            foreach ($msg in ($issues | Where-Object Severity -EQ 'Information')) {
+              Write-ActionInfo "$($msg.ScriptPath):$($msg.Line):$($msg.Column):$($msg.RuleName): $($msg.Message)"
+            }
 
       - name: Test with Pester
         run: |
